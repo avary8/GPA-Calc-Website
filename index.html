@@ -1,10 +1,18 @@
-<!--vision: user can input classes and grades.
-the program will save it to a file in this folder
-then anytime the website is run . it will display classes taken , cred hours, grade, and overall gpa
+<!--user can input classes, credit hours, and grades.
+that info is put into a table
+overall gpa is calculated each time
 
-also may want to not allow duplicate classes. and give option to delete classes -->
+supports lowercase grades (automatically turns to uppercase)
+highlights and disregards invalid inputs 
+
+future: may want to not allow duplicate classes. and give option to delete classes -->
 
 <html>
+    <!-- <style>
+        input:focus, textarea:focus, select:focus{
+            outline: none;
+        }
+    </style> -->
     <head>
         <title>GPA Caculator</title>
         <link rel="stylesheet" href="style.css">
@@ -18,10 +26,10 @@ also may want to not allow duplicate classes. and give option to delete classes 
                     <input type="text" id="class" placeholder="">
                     
                     <label for="cred">Credit Hours</label>                        
-                    <input type="number" id="cred" placeholder="">
+                    <input type="number" id="cred" placeholder="" required>
                     
                     <label for="grade">Grade</label>
-                    <input type="text" id="grade" placeholder="">
+                    <input type="text" id="grade" style="text-transform: uppercase" placeholder="" required>
                     
                     <input type="button" value ="Click to Add" id="btn"></input>
                 </div>
@@ -49,17 +57,42 @@ also may want to not allow duplicate classes. and give option to delete classes 
         </div>
 
         <script>
-            let classes = [];
-            //example {id: theDate , classCode: cop3502, cred: 4, grade: A}
-            const addClass = (ev)=>{
-                ev.preventDefault();
-                let newClass = {
-                    id: Date.now(),
-                    classCode: document.getElementById('class').value,
-                    cred: document.getElementById('cred').value,
-                    grade: document.getElementById('grade').value,
+            function isValidGrade(grade){
+                if (grade.length == 1 && /^[A-F]$/.test(grade)){
+                    return true;  
                 }
-                classes.push(newClass);
+                return false;
+            }
+            function check(ev){
+                var valid = true;
+                if (document.getElementById('cred').value.length == 0 || !document.getElementById('cred').checkValidity()){
+                    //document.getElementById('cred').style.borderColor = "red";
+                    document.getElementById('cred').style.boxShadow = "0px 0px 0px 2px red";
+                    valid = false;
+                }
+                if (document.getElementById('grade').value.length == 0 || !isValidGrade(document.getElementById('grade').value)){
+                //document.getElementById('grade').style.borderColor = "red";
+                document.getElementById('grade').style.boxShadow = "0px 0px 0px 2px red";
+                valid = false;
+                }
+
+                ev.preventDefault();
+                if (valid){
+                    //document.getElementById('cred').style.borderColor = "black";
+                    //document.getElementById('grade').style.borderColor = "black";
+                    document.getElementById('cred').style.boxShadow = "0px 0px 0px 2px black";
+                    document.getElementById('grade').style.boxShadow = "0px 0px 0px 2px black";
+
+                    let classes = [];
+                    //example {id: theDate , classCode: cop3502, cred: 4, grade: A}
+                    // const addClass = (ev)=>{
+                        let newClass = {
+                            id: Date.now(),
+                            classCode: document.getElementById('class').value,
+                            cred: document.getElementById('cred').value,
+                            grade: document.getElementById('grade').value,
+                        }
+                        classes.push(newClass);
                 //document.forms[0].reset(); //clears form for next class
                 //saving to local Storage
                 //localStorage.setItem('MyClassList', JSON.stringify(classes));
@@ -73,8 +106,10 @@ also may want to not allow duplicate classes. and give option to delete classes 
                 
                 //classes.forEach(newClass => savedData.innerHTML += "<br>" + Object.values(newClass).join(" "));
             //     savedData.innerHTML += "<br>" + newClass.cred + "\t" + newClass.classCode + "\t" + newClass.grade;
-            addRow(classes);    
+                    addRow(classes);    
+                //}
         }
+    }
         
         function addRow(classes){
                 var tableBody = document.getElementById("table-body");
@@ -129,7 +164,7 @@ also may want to not allow duplicate classes. and give option to delete classes 
 
             document.addEventListener('DOMContentLoaded', ()=>{
                 //document.getElementById('btn').addEventListener('click', addClass);
-                document.getElementById('btn').addEventListener('click', addClass);
+                document.getElementById('btn').addEventListener('click', check);
             });
         </script>
 
