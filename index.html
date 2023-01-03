@@ -1,0 +1,137 @@
+<!--vision: user can input classes and grades.
+the program will save it to a file in this folder
+then anytime the website is run . it will display classes taken , cred hours, grade, and overall gpa
+
+also may want to not allow duplicate classes. and give option to delete classes -->
+
+<html>
+    <head>
+        <title>GPA Caculator</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="main">
+            <form>
+                <h2>Add a Class</h2>
+                <div class="formBox">
+                    <label for="class">Class</label>
+                    <input type="text" id="class" placeholder="">
+                    
+                    <label for="cred">Credit Hours</label>                        
+                    <input type="number" id="cred" placeholder="">
+                    
+                    <label for="grade">Grade</label>
+                    <input type="text" id="grade" placeholder="">
+                    
+                    <input type="button" value ="Click to Add" id="btn"></input>
+                </div>
+            </form>
+
+            <div id="gpa">
+                <h3>GPA</h3>
+                <p id="newGPA" value=0.0></p>
+            </div>
+
+            <div class="log">
+                <table class="styled-table">
+                    <thead id="table-head">
+                        <tr>
+                            <th>Credits</th>
+                            <th>Class</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+
+        <script>
+            let classes = [];
+            //example {id: theDate , classCode: cop3502, cred: 4, grade: A}
+            const addClass = (ev)=>{
+                ev.preventDefault();
+                let newClass = {
+                    id: Date.now(),
+                    classCode: document.getElementById('class').value,
+                    cred: document.getElementById('cred').value,
+                    grade: document.getElementById('grade').value,
+                }
+                classes.push(newClass);
+                //document.forms[0].reset(); //clears form for next class
+                //saving to local Storage
+                //localStorage.setItem('MyClassList', JSON.stringify(classes));
+
+                // var str = "";
+                // for (let i = 0; i < classes.length; i++){
+                //     str.concat(classes[i].cred + classes[i].classCode + classes[i].grade + "\n");
+                // }
+                // console.log(str);
+                // document.getElementById("savedData").innerHTML = str;
+                
+                //classes.forEach(newClass => savedData.innerHTML += "<br>" + Object.values(newClass).join(" "));
+            //     savedData.innerHTML += "<br>" + newClass.cred + "\t" + newClass.classCode + "\t" + newClass.grade;
+            addRow(classes);    
+        }
+        
+        function addRow(classes){
+                var tableBody = document.getElementById("table-body");
+                var td1 = document.createElement("td");
+                var td2 = document.createElement("td");
+                var td3 = document.createElement("td");    
+                var row = document.createElement("tr");
+                
+                td1.innerHTML = document.getElementById('cred').value;
+                td2.innerHTML = document.getElementById('class').value;
+                td3.innerHTML = document.getElementById('grade').value;
+
+                row.appendChild(td1);
+                row.appendChild(td2);
+                row.appendChild(td3);
+                
+                tableBody.appendChild(row);
+
+                calcGPA(classes);
+            }
+
+            function calcGPA(classes){
+                const letterToNum = new Map();
+                letterToNum.set('A', 4);
+                letterToNum.set('A-', 3.67);
+                letterToNum.set('B+', 3.33);
+                letterToNum.set('B', 3);
+                letterToNum.set('B-', 2.67);
+                letterToNum.set('C+', 2.33);
+                letterToNum.set('C', 2);
+                letterToNum.set('C-', 1.67);
+                letterToNum.set('D+', 1.33);
+                letterToNum.set('D', 1);
+                letterToNum.set('D-', 0.67);
+                letterToNum.set('E', 0);
+                letterToNum.set('F', 0);
+                
+                var credTotal = 0;
+                var pointTotal = 0;
+                for (let i = 0; i < classes.length; i++){
+                    credTotal += +classes[i].cred;
+                    var weightedPoints = +letterToNum.get(classes[i].grade) * +classes[i].cred;
+                    pointTotal += weightedPoints;
+
+                    console.log(weightedPoints);
+                    console.log(credTotal);
+                    console.log(pointTotal);
+                }
+                var newGPA = document.getElementById("newGPA");
+                newGPA.innerHTML = pointTotal/credTotal;
+            }
+
+            document.addEventListener('DOMContentLoaded', ()=>{
+                //document.getElementById('btn').addEventListener('click', addClass);
+                document.getElementById('btn').addEventListener('click', addClass);
+            });
+        </script>
+
+    </body>
+</html>
